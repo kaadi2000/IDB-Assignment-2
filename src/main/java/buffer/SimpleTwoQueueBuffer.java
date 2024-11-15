@@ -12,43 +12,55 @@ public class SimpleTwoQueueBuffer extends PageFaultRateBuffer {
         super(capacity);
         // TODO
         this.kin= capacity/4;
+        if (this.kin == 0) {
+            this.kin = 1;
+        }
     }
 
     @Override
     protected Buffer.Slot fix(char c) throws IllegalStateException {
         // TODO
         Slot slot = lookUp(c);
-
         if (slot != null) {
-            if (a1.remove(slot)) {
+            if (a1.contains(slot)) {
+                a1.remove(slot);
                 am.addFirst(slot);
-            } else {
+            } else if (am.contains(slot)) {
                 am.remove(slot);
                 am.addFirst(slot);
             }
+            slot.fix();
+            return slot;
         } else {
-            if (a1.size() < kin) {
-                slot = super.fix(c);
-                a1.add(slot);
-            } else {
-                Slot victim = victim();
-                if (victim != null) {
-                    a1.remove(victim);
-                }
-                slot = super.fix(c);
-                a1.add(slot);
+            if (fixedSlots == capacity()) {
+                throw new IllegalStateException("Buffer overflow. Too many slots fixed.");
             }
+            if (size() == capacity()) {
+                Slot victim = victim();
+                victim.remove();
+            }
+            slot = slots.get(size());
+            slot.insert(c);
+            slot.fix();
+            a1.addLast(slot);
+            if (a1.size() > kin) {
+                Slot oldest = a1.removeFirst();
+                oldest.remove();
+            }
+            return slot;
         }
-        return slot;
     }
 
     protected Slot victim() {
         // TODO
         if (!a1.isEmpty()) {
-            return a1.peek();
+            Slot victim = a1.removeFirst();
+            return victim;
         } else if (!am.isEmpty()) {
-            return am.peekLast();
+            Slot victim = am.removeLast();
+            return victim;
+        } else {
+            throw new IllegalStateException("No victim to evict");
         }
-        return null;
     }
 }

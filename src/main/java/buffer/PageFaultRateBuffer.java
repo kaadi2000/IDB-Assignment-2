@@ -23,11 +23,7 @@ public abstract class PageFaultRateBuffer extends Buffer {
         Slot slot = lookUp(c);
         if (slot==null) {
             fsCount++;
-            slot= super.fix(c);
         }
-        else{
-            slot.fix();
-        }
-        return slot;
+        return super.fix(c);
     }
 }
