@@ -9,7 +9,7 @@ public class StorePerformanceTest {
 
     public static void main(String[] args) {
 
-        CustomerDatabase customerDatabase = new CustomerDatabase(10000, 10, 5);
+        CustomerDatabase customerDatabase = new CustomerDatabase(10, 10, 5);
         List<Customer> customers = customerDatabase.getCustomersList();
 
         System.out.println("Testing KVStoreImpl...");

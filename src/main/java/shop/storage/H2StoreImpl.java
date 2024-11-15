@@ -33,13 +33,14 @@ public class H2StoreImpl implements CustomerStore, CustomerStoreQuery {
             // TODO
     
             String createCustomer =
-                    "CREATE TABLE CUSTOMERS(id int primary key, name varchar(255))";
-            String createOrder =
-                    "CREATE TABLE ORDERS(oid int primary key, customerId int, shippingAddress varchar(255))";
+                    "CREATE TABLE IF NOT EXISTS CUSTOMERS(id int primary key, name varchar(255))";
+            String createOrder = "CREATE TABLE IF NOT EXISTS ORDERS(" +
+                    "oid INT PRIMARY KEY, " +
+                    "shippingAddress VARCHAR(255)";
             String createProduct =
-                    "CREATE TABLE PRODUCTS(pid int primary key, pname varchar(255))";
+                    "CREATE TABLE IF NOT EXISTS PRODUCTS(pid int primary key, pname varchar(255))";
             String createOrderItem =
-                    "CREATE TABLE ORDERITEMS(otid int auto_increment, orderId int, productId int)";
+                    "CREATE TABLE IF NOT EXISTS ORDERITEMS(orderId int auto_increment, orderId int, productId int)";
     
             try (Statement commandStatement = dbConnection.createStatement()) {
                 commandStatement.execute(createCustomer);
@@ -54,27 +55,24 @@ public class H2StoreImpl implements CustomerStore, CustomerStoreQuery {
         // TODO
         try {
 
-            String insertCustomerSQL = "INSERT INTO CUSTOMERS (id, name, address) VALUES (?, ?, ?)";
+            String insertCustomerSQL = "INSERT INTO CUSTOMERS (id, name) VALUES (?, ?)";
             try (PreparedStatement customerStmt = dbConnection.prepareStatement(insertCustomerSQL)) {
                 customerStmt.setInt(1, customer.getCustomerId());
                 customerStmt.setString(2, customer.getUserName());
-                customerStmt.setString(3, customer.getAddress());
                 customerStmt.executeUpdate();
             }
 
             for (Order order : customer.getOrders()) {
-                // Insert Order into ORDERS table
-                String insertOrderSQL = "INSERT INTO ORDERS (oid, customerId, shippingAddress) VALUES (?, ?, ?)";
+
+                String insertOrderSQL = "INSERT INTO ORDERS (oid, shippingAddress) VALUES (?, ?)";
                 try (PreparedStatement orderStmt = dbConnection.prepareStatement(insertOrderSQL)) {
                     orderStmt.setInt(1, order.getOrderId());
-                    orderStmt.setInt(2, customer.getCustomerId());
-                    orderStmt.setString(3, customer.getAddress());
+                    orderStmt.setString(2, order.getShippingAddress());
                     orderStmt.executeUpdate();
                 }
 
-                // Insert each Product in the Order into PRODUCTS and ORDERITEMS tables
                 for (Product product : order.getItems()) {
-                    // Insert Product into PRODUCTS table if it doesn't already exist
+                    
                     String insertProductSQL = "MERGE INTO PRODUCTS (pid, pname) KEY(pid) VALUES (?, ?)";
                     try (PreparedStatement productStmt = dbConnection.prepareStatement(insertProductSQL)) {
                         productStmt.setInt(1, product.getProductId());

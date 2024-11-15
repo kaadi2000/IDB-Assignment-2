@@ -16,7 +16,7 @@ public class ShopGenerator {
         List<Product> products = new ArrayList<>();
         for (int i = 1; i <= numProducts; i++) {
             Faker newRandomGenerator = new Faker();
-            int productID = newRandomGenerator.idNumber().hashCode();
+            int productID = i * newRandomGenerator.number().numberBetween(1000, 9999);
             String productName = newRandomGenerator.food().ingredient();
             products.add(new Product(productID, productName));
         }
@@ -28,7 +28,7 @@ public class ShopGenerator {
         List<Order> orders = new ArrayList<>();
         for(int i = 1; i <= numOrders; i++) {
             Faker newRandomGenerator = new Faker();
-            int orderID = newRandomGenerator.idNumber().hashCode();
+            int orderID = i * newRandomGenerator.number().numberBetween(99999, 894282);
             String shippingAddress = newRandomGenerator.address().streetAddress();
             List<Product> orderItems = new ArrayList<>();
             for(int j = 0; j < newRandomGenerator.number().numberBetween(1, products.size()/2); j++){
@@ -42,7 +42,7 @@ public class ShopGenerator {
     public static Customer generateCustomer(List<Product> products, int maxOrders) {
         // TODO
         Faker newRandomGenerator = new Faker();
-        int customerID = newRandomGenerator.number().numberBetween(1000, 9999);
+        int customerID = newRandomGenerator.number().numberBetween(9999, 99999);
         String userName = newRandomGenerator.name().username();
         String address = newRandomGenerator.address().streetAddress();
 
