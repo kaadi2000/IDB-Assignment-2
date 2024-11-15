@@ -1,16 +1,13 @@
-# Compiled class file
+// This file is used to ignore files and directories in the repository
 *.class
 
-# Log file
-*.log
 
-# BlueJ files
+*.log
+*.iml
 *.ctxt
 
-# Mobile Tools for Java (J2ME)
 .mtj.tmp/
 
-# Package Files #
 *.jar
 *.war
 *.nar
@@ -19,6 +16,14 @@
 *.tar.gz
 *.rar
 
-# virtual machine crash logs, see http://www.java.com/en/download/help/error_hotspot.xml
+*.dbf*
+*.dbr*
+*.idf*
+*.idr*
+*.db
+
+/target
+/.idea
+
 hs_err_pid*
 replay_pid*

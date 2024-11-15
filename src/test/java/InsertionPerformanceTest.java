@@ -1,16 +1,19 @@
-package shop.storage;
-
-import java.util.List;
-
 import shop.Customer;
-import shop.generator.CustomerDatabase;
+import shop.generator.ShopGenerator;
+import shop.storage.H2StoreImpl;
+import shop.storage.KVStoreImpl;
 
-public class StorePerformanceTest {
+public class InsertionPerformanceTest {
+    private static final int NUM_CUSTOMERS = 9999;
 
     public static void main(String[] args) {
 
-        CustomerDatabase customerDatabase = new CustomerDatabase(10000, 10, 5);
-        List<Customer> customers = customerDatabase.getCustomersList();
+        System.out.println("Generating test data...");
+        var products = ShopGenerator.generateProducts(100);
+        var customers = new Customer[NUM_CUSTOMERS];
+        for (int i = 0; i < NUM_CUSTOMERS; i++) {
+            customers[i] = ShopGenerator.generateCustomer(products, 5);
+        }
 
         System.out.println("Testing KVStoreImpl...");
         KVStoreImpl kvStore = new KVStoreImpl();
@@ -34,7 +37,7 @@ public class StorePerformanceTest {
         h2Store.close();
         System.out.println("H2StoreImpl insertion time: " + (h2EndTime - h2StartTime) + " ms");
 
-        System.out.println("Results:");
+        System.out.println("Performance Results:");
         System.out.println("KVStoreImpl Time: " + (kvEndTime - kvStartTime) + " ms");
         System.out.println("H2StoreImpl Time: " + (h2EndTime - h2StartTime) + " ms");
     }
